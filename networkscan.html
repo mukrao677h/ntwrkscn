@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Microsoft Security Scan Portal:</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #00d9ff;
+    }
+
+    .scanner {
+      background-color: #1f2937;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 90%;
+      max-width: 400px;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #00d9ff;
+      border: none;
+      color: #1f1f1f;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00a4cc;
+    }
+
+    .loading {
+      margin-top: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dots::after {
+      content: "";
+      display: inline-block;
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes dots {
+      0% { content: ""; }
+      33% { content: "."; }
+      66% { content: ".."; }
+      100% { content: "..."; }
+    }
+
+    .progress-bar {
+      margin-top: 20px;
+      width: 80%;
+      height: 12px;
+      background-color: #374151;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #00d9ff;
+      animation: fillBar 60s linear forwards;
+    }
+
+    @keyframes fillBar {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      display: none;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+
+    th {
+      background-color: #111827;
+      color: #00d9ff;
+    }
+
+    td {
+      background-color: #1f2937;
+    }
+
+    .note {
+      margin-top: 20px;
+      color: #ff5757;
+      font-weight: bold;
+      font-size: 16px;
+      display: none;
+      text-align: left;
+    }
+
+    .note div {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+
+      .scanner {
+        padding: 20px;
+      }
+
+      table {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Microsoft Security Scan Portal:</h1>
+
+  <div class="scanner">
+    <input type="text" id="ipAddress" placeholder="Enter I.P. address" />
+    <br />
+    <button onclick="startScan()">Run Scan</button>
+
+    <div class="loading" id="loadingArea">
+      <div class="dots" style="font-size: 18px;">Scanning</div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody">
+        <!-- Results injected by JS -->
+      </tbody>
+    </table>
+
+    <div class="note" id="note">
+      <!-- Security tips will appear here -->
+    </div>
+  </div>
+
+  <script>
+    function startScan() {
+      const ip = document.getElementById('ipAddress').value.trim();
+      const loadingArea = document.getElementById('loadingArea');
+      const resultTable = document.getElementById('resultsTable');
+      const note = document.getElementById('note');
+      const resultBody = document.getElementById('resultBody');
+      const progressFill = document.getElementById('progressFill');
+
+      if (!ip) {
+        alert("Please enter a valid IP address.");
+        return;
+      }
+
+      // Reset UI
+      loadingArea.style.display = "flex";
+      resultTable.style.display = "none";
+      note.style.display = "none";
+      resultBody.innerHTML = "";
+      note.innerHTML = "";
+      
+      // Restart progress animation
+      const newProgressFill = progressFill.cloneNode(true);
+      progressFill.parentNode.replaceChild(newProgressFill, progressFill);
+
+      // Simulated scan delay
+      setTimeout(() => {
+        showResults();
+      }, 6000); // 60 seconds
+    }
+
+    function showResults() {
+      const fixedResults = [
+        { service: "Banking", status: "⚠️ Hacked" },
+        { service: "Facebook", status: "⚠️ Hacked" },
+        { service: "Instagram", status: "Safe" },
+        { service: "LinkedIn", status: "⚠️ Hacked" },
+        { service: "WhatsApp", status: "⚠️ Hacked" },
+        { service: "Email", status: "⚠️ Hacked" },
+        { service: "Photos In All Devices", status: "⚠️ Compromised" },
+        { service: "Phone Lines", status: "⚠️ Compromised" }
+      ];
+
+      const securityTips = [
+        "⚠️ Check your Online Banking only when connected to Microsoft Server.",
+        "⚠️ Do not use public Wi-Fi for financial activity.",
+        "⚠️ Bank Card number starts with 5 or 3 or 6 or 4",
+        "⚠️ Child Pornography downloaded with this I.P. address",
+        "⚠️ Contact your bank to with a Microsoft Secure Line.",
+        "⚠️ Social Secuirty Number Black Listed",
+        "⚠️ Child Pornography purchases made on this I.P. address",
+        "⚠️ Avoid clicking unknown links in emails.",
+        "⚠️ First priority is call your bank headquarter"
+      ];
+
+      // Display results in same order always
+      const resultBody = document.getElementById('resultBody');
+      fixedResults.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${entry.service}</td><td>${entry.status}</td>`;
+        resultBody.appendChild(row);
+      });
+
+      // Randomize only the tips
+      const shuffledTips = securityTips.sort(() => 0.5 - Math.random());
+      const selectedTips = shuffledTips.slice(0, Math.floor(Math.random() * 2) + 10);
+
+      const note = document.getElementById('note');
+      note.innerHTML = selectedTips.map(tip => `<div>${tip}</div>`).join('');
+      note.style.display = "block";
+
+      document.getElementById('loadingArea').style.display = "none";
+      document.getElementById('resultsTable').style.display = "table";
+    }
+  </script>
+
+</body>
+</html>
